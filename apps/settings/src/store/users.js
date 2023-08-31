@@ -61,6 +61,8 @@ const state = {
 	minPasswordLength: 0,
 	usersOffset: 0,
 	usersLimit: 25,
+	disabledUsersOffset: 0,
+	disabledUsersLimit: 25,
 	userCount: 0,
 	showConfig: {
 		showStoragePath: false,
@@ -80,6 +82,9 @@ const mutations = {
 		const users = state.users.concat(newUsers)
 		state.usersOffset += state.usersLimit
 		state.users = users
+	},
+	updateDisabledUsers(state, _usersObj) {
+		state.disabledUsersOffset += state.disabledUsersLimit
 	},
 	setPasswordPolicyMinLength(state, length) {
 		state.minPasswordLength = length !== '' ? length : 0
@@ -230,6 +235,7 @@ const mutations = {
 	resetUsers(state) {
 		state.users = []
 		state.usersOffset = 0
+		state.disabledUsersOffset = 0
 	},
 
 	setShowConfig(state, { key, value }) {
@@ -256,6 +262,12 @@ const getters = {
 	},
 	getUsersLimit(state) {
 		return state.usersLimit
+	},
+	getDisabledUsersOffset(state) {
+		return state.disabledUsersOffset
+	},
+	getDisabledUsersLimit(state) {
+		return state.disabledUsersLimit
 	},
 	getUserCount(state) {
 		return state.userCount
@@ -356,6 +368,32 @@ const actions = {
 					context.commit('API_FAILURE', error)
 				}
 			})
+	},
+
+	// TODO test many users
+
+	/**
+	 * Get disabled users with full details
+	 *
+	 * @param {object} context store context
+	 * @param {object} options destructuring object
+	 * @param {number} options.offset List offset to request
+	 * @param {number} options.limit List number to return from offset
+	 * @return {Promise<number>}
+	 */
+	async getDisabledUsers(context, { offset, limit }) {
+		const url = generateOcsUrl('cloud/users/disabled?offset={offset}&limit={limit}', { offset, limit })
+		try {
+			const response = await api.get(url)
+			const usersCount = Object.keys(response.data.ocs.data.users).length
+			if (usersCount > 0) {
+				context.commit('appendUsers', response.data.ocs.data.users)
+				context.commit('updateDisabledUsers', response.data.ocs.data.users)
+			}
+			return usersCount
+		} catch (error) {
+			context.commit('API_FAILURE', error)
+		}
 	},
 
 	getGroups(context, { offset, limit, search }) {
