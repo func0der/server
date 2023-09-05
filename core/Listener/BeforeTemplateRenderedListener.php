@@ -6,6 +6,7 @@ declare(strict_types=1);
  * @copyright 2022 John Molakvoæ <skjnldsv@protonmail.com>
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
+ * @author Richard Steinmetz <richard@steinmetz.cloud>
  *
  * @license GNU AGPL version 3 or any later version
  *
@@ -48,12 +49,6 @@ class BeforeTemplateRenderedListener implements IEventListener {
 		}
 
 		\OC_Util::addStyle('server', null, true);
-
-		if ($event instanceof BeforeLoginTemplateRenderedEvent) {
-			// todo: make login work without these
-			//Util::addScript('core', 'common');
-			//Util::addScript('core', 'main');
-		}
 
 		if ($event instanceof BeforeTemplateRenderedEvent) {
 			// include common nextcloud webpack bundle
