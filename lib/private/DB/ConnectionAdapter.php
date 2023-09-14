@@ -250,13 +250,13 @@ class ConnectionAdapter implements IDBConnection {
 	public function getDatabaseProvider(): string {
 		$platform = $this->inner->getDatabasePlatform();
 		if ($platform instanceof MySQLPlatform) {
-			return IDBConnection::MYSQL;
+			return IDBConnection::PLATFORM_MYSQL;
 		} elseif ($platform instanceof PostgreSQLPlatform) {
-			return IDBConnection::POSTGRES;
+			return IDBConnection::PLATFORM_POSTGRES;
 		} elseif ($platform instanceof OraclePlatform) {
-			return IDBConnection::ORACLE;
+			return IDBConnection::PLATFORM_ORACLE;
 		} elseif ($platform instanceof SqlitePlatform) {
-			return IDBConnection::SQLITE;
+			return IDBConnection::PLATFORM_SQLITE;
 		} else {
 			return $platform::class;
 		}
