@@ -45,9 +45,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
  * @since 6.0.0
  */
 interface IDBConnection {
-	public const DB2 = 'db2';
 	public const MYSQL = 'mysql';
-	public const MSSQL = 'mssql';
 	public const POSTGRES = 'postgres';
 	public const ORACLE = 'oracle';
 	public const SQLITE = 'sqlite';
