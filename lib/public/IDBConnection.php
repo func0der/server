@@ -49,10 +49,10 @@ interface IDBConnection {
 	public const PLATFORM_MYSQL = 'mysql';
 
 	/* @since 28.0.0 */
-	public const PLATFORM_POSTGRES = 'postgres';
+	public const PLATFORM_ORACLE = 'oracle';
 
 	/* @since 28.0.0 */
-	public const PLATFORM_ORACLE = 'oracle';
+	public const PLATFORM_POSTGRES = 'postgres';
 
 	/* @since 28.0.0 */
 	public const PLATFORM_SQLITE = 'sqlite';
