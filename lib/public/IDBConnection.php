@@ -45,6 +45,13 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
  * @since 6.0.0
  */
 interface IDBConnection {
+	public const DB2 = 'db2';
+	public const MYSQL = 'mysql';
+	public const MSSQL = 'mssql';
+	public const POSTGRES = 'postgres';
+	public const ORACLE = 'oracle';
+	public const SQLITE = 'sqlite';
+
 	/**
 	 * Gets the QueryBuilder for the connection.
 	 *
@@ -339,4 +346,13 @@ interface IDBConnection {
 	 * @since 13.0.0
 	 */
 	public function migrateToSchema(Schema $toSchema): void;
+
+	/**
+	 * Returns the database provider name
+	 *
+	 * @throws Exception
+	 * @link https://github.com/nextcloud/server/issues/30877
+	 * @since 28.0.0
+	 */
+	public function getDatabaseProvider(): string;
 }

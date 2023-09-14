@@ -27,6 +27,12 @@ namespace OC\DB;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Platforms\DB2Platform;
+use Doctrine\DBAL\Platforms\MySQLPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SqlitePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\Schema;
 use OC\DB\Exceptions\DbalException;
 use OCP\DB\IPreparedStatement;
@@ -241,5 +247,24 @@ class ConnectionAdapter implements IDBConnection {
 
 	public function getInner(): Connection {
 		return $this->inner;
+	}
+
+	public function getDatabaseProvider(): string {
+		$platform = $this->inner->getDatabasePlatform();
+		if ($platform instanceof DB2Platform) {
+			return IDBConnection::DB2;
+		} elseif ($platform instanceof MySQLPlatform) {
+			return IDBConnection::MYSQL;
+		} elseif ($platform instanceof PostgreSQLPlatform) {
+			return IDBConnection::POSTGRES;
+		} elseif ($platform instanceof OraclePlatform) {
+			return IDBConnection::ORACLE;
+		} elseif ($platform instanceof SqlitePlatform) {
+			return IDBConnection::SQLITE;
+		} elseif ($platform instanceof SQLServerPlatform) {
+			return IDBConnection::MSSQL;
+		} else {
+			return $platform::class;
+		}
 	}
 }
