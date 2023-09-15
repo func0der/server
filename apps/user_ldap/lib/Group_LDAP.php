@@ -46,11 +46,13 @@ namespace OCA\User_LDAP;
 
 use Exception;
 use OC\ServerNotAvailableException;
+use OCA\User_LDAP\User\OfflineUser;
 use OCP\Cache\CappedMemoryCache;
 use OCP\GroupInterface;
 use OCP\Group\Backend\ABackend;
 use OCP\Group\Backend\IDeleteGroupBackend;
 use OCP\Group\Backend\IGetDisplayNameBackend;
+use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 
 class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDisplayNameBackend, IDeleteGroupBackend {
@@ -664,10 +666,20 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 	 * @throws Exception
 	 * @throws ServerNotAvailableException
 	 */
-	public function getUserGroups($uid) {
+	public function getUserGroups($uid): array {
 		if (!$this->enabled) {
 			return [];
 		}
+		$ncUid = $uid;
+
+		$user = $this->access->userManager->get($uid);
+		if ($user instanceof OfflineUser) {
+			/** @var IConfig $config */
+			$config = \OCP\Server::get(IConfig::class);
+			$groupStr = $config->getUserValue($uid, 'user_ldap', 'group-memberships-' . $this->access->connection->getConfigPrefix(), '[]');
+			return \json_decode($groupStr) ?? [];
+		}
+
 		$cacheKey = 'getUserGroups' . $uid;
 		$userGroups = $this->access->connection->getFromCache($cacheKey);
 		if (!is_null($userGroups)) {
@@ -786,6 +798,10 @@ class Group_LDAP extends ABackend implements GroupInterface, IGroupLDAP, IGetDis
 
 		$groups = array_unique($groups, SORT_LOCALE_STRING);
 		$this->access->connection->writeToCache($cacheKey, $groups);
+		/** @var IConfig $config */
+		$config = \OCP\Server::get(IConfig::class);
+		$groupStr = \json_encode($groups);
+		$config->setUserValue($ncUid, 'user_ldap', 'group-memberships-' . $this->access->connection->getConfigPrefix(), $groupStr);
 
 		return $groups;
 	}
